@@ -1,5 +1,5 @@
 {
-  "originHash" : "fc57485334522f64c5d5dc832d284f2dd45200f4528cae9c2e1aa851dc799b06",
+  "originHash" : "f28677f44333cd5f9ee932607c638c57ee36de7a076ef85f519db42570433e92",
   "pins" : [
     {
       "identity" : "colorfulx",
@@ -26,6 +26,15 @@
       "state" : {
         "revision" : "d9f928377d5fe6809462acf91b5df365d9ecf461",
         "version" : "4.1.3"
+      }
+    },
+    {
+      "identity" : "lookinside-release",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/LookInsideApp/LookInside-Release.git",
+      "state" : {
+        "revision" : "7514cfa8bd24a78f74d8b982c429e7d61ef58134",
+        "version" : "0.2.2"
       }
     },
     {

@@ -165,14 +165,14 @@ class WelcomePageViewController: UIViewController {
         titleLabel.numberOfLines = 0
         titleLabel.textAlignment = .left
         let titleText = NSMutableAttributedString(
-            string: String(localized: config.title),
+            string: config.title,
             attributes: [
                 .font: UIFont.systemFont(ofSize: 32, weight: .bold),
                 .foregroundColor: UIColor.label,
             ]
         )
         titleText.append(NSAttributedString(
-            string: "\n" + String(localized: config.highlightedTitle),
+            string: "\n" + config.highlightedTitle,
             attributes: [
                 .font: UIFont.systemFont(ofSize: 32, weight: .bold),
                 .foregroundColor: config.accentColor,
@@ -182,7 +182,7 @@ class WelcomePageViewController: UIViewController {
         stackView.addArrangedSubview(titleLabel)
 
         let subtitleLabel = UILabel()
-        subtitleLabel.text = String(localized: config.subtitle)
+        subtitleLabel.text = config.subtitle
         subtitleLabel.font = .preferredFont(forTextStyle: .body)
         subtitleLabel.textColor = .secondaryLabel
         subtitleLabel.numberOfLines = 0
@@ -216,7 +216,7 @@ class WelcomePageViewController: UIViewController {
         buttonConfig.cornerStyle = .large
         buttonConfig.baseBackgroundColor = config.accentColor
         buttonConfig.baseForegroundColor = .white
-        buttonConfig.title = String(localized: config.buttonTitle)
+        buttonConfig.title = config.buttonTitle
         actionButton.configuration = buttonConfig
     }
 

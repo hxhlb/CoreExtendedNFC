@@ -61,8 +61,8 @@ class FeatureRowView: UIView {
             .init(pointSize: 16, weight: .medium)
         )
         iconView.tintColor = accentColor
-        titleLabel.text = String(localized: feature.title)
-        detailLabel.text = String(localized: feature.detail)
+        titleLabel.text = feature.title
+        detailLabel.text = feature.detail
     }
 }
 
