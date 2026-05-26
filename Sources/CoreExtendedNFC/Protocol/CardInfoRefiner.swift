@@ -8,6 +8,8 @@ enum CardInfoRefiner {
         switch info.type {
         case .mifareUltralight:
             try await refineUltralight(info, transport: transport)
+        case .mifareClassic1K, .mifareClassic4K, .mifareMini:
+            try await refinePossibleUltralight(info, transport: transport)
         case .smartMX:
             try await refineISO7816(info, transport: transport)
         default:
@@ -26,6 +28,41 @@ enum CardInfoRefiner {
         } catch {
             return info
         }
+    }
+
+    private static func refinePossibleUltralight(
+        _ info: CardInfo,
+        transport: any NFCTagTransport
+    ) async throws -> CardInfo {
+        let commands = UltralightCommands(transport: transport)
+        do {
+            let manufacturerPages = try await commands.readPages(startPage: 0x00)
+            guard matchesUltralightManufacturerPages(manufacturerPages, uid: info.uid) else {
+                return info
+            }
+            return try await refineUltralight(updated(info, type: .mifareUltralight), transport: transport)
+        } catch {
+            return info
+        }
+    }
+
+    private static func matchesUltralightManufacturerPages(_ pages: Data, uid: Data) -> Bool {
+        guard uid.count >= 7, pages.count >= 12 else { return false }
+
+        let bytes = [UInt8](pages.prefix(12))
+        let uidBytes = [UInt8](uid.prefix(7))
+        let expectedBCC0 = 0x88 ^ uidBytes[0] ^ uidBytes[1] ^ uidBytes[2]
+        let expectedBCC1 = uidBytes[3] ^ uidBytes[4] ^ uidBytes[5] ^ uidBytes[6]
+
+        return bytes[0] == uidBytes[0]
+            && bytes[1] == uidBytes[1]
+            && bytes[2] == uidBytes[2]
+            && bytes[3] == expectedBCC0
+            && bytes[4] == uidBytes[3]
+            && bytes[5] == uidBytes[4]
+            && bytes[6] == uidBytes[5]
+            && bytes[7] == uidBytes[6]
+            && bytes[8] == expectedBCC1
     }
 
     private static func refineISO7816(

@@ -164,6 +164,12 @@ All view controllers call `setupDismissKeyboardOnTap()` in `viewDidLoad()`.
 - Use `String(localized:)` for all user-facing text.
 - After adding new strings, backfill `en` values — see memory notes for the script.
 
+### Documentation Site
+
+- The documentation site under `docs/` is part of release readiness.
+- When a fix or feature changes public behavior, update the docs site alongside code and tests.
+- Before considering release work complete, verify both tests and relevant docs site pages have been updated.
+
 ## What NOT to Do
 
 - **Never** attempt MIFARE Classic authentication (0x60/0x61) — iOS cannot handle Crypto1 parity bits. Classic is identification-only.

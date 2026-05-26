@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="light dark"><title>CoreExtendedNFC · Card Commands</title><link rel="stylesheet" href="../styles.css"></head>
+<body><nav class="topbar" aria-label="Primary"><a class="home" href="../index.html">CoreExtendedNFC</a><a href="../index.html">Overview</a><a href="../guide/index.html">Guide</a><a href="index.html" aria-current="page">API</a><a href="../architecture.html">Architecture</a><a href="../build.html">Build</a><a href="../research/index.html">Research</a></nav>
+<main><h1>Card commands</h1><p class="lede">Lower-level command objects are useful when an app needs explicit control after <code>scan()</code> returns a connected transport.</p>
+<pre><code class="language-swift">let commands = UltralightCommands(transport: transport)
+let pages = try await commands.readPages(startPage: 4)
+try await commands.writePage(4, data: Data([0x01, 0x02, 0x03, 0x04]))
+
+let desfire = DESFireCommands(transport: transport)
+let version = try await desfire.getVersion()
+let aids = try await desfire.getApplicationIDs()
+
+let select = CommandAPDU.select(aid: passportAID)
+let response = try await iso7816Transport.sendAPDU(select)</code></pre>
+<table><thead><tr><th>Type</th><th>Use</th></tr></thead><tbody><tr><td><code>CardIdentifier</code></td><td>ATQA and SAK card-family classification.</td></tr><tr><td><code>ISO14443</code></td><td>CRC_A, CRC_B, and ATS parsing.</td></tr><tr><td><code>ASN1Parser</code></td><td>BER-TLV parsing for eMRTD and card payloads.</td></tr></tbody></table>
+<nav class="pager"><a class="prev" href="core.html">Core API</a><a class="next" href="models.html">Models</a></nav><footer>CoreExtendedNFC · <a href="https://github.com/Lakr233/CoreExtendedNFC">github.com/Lakr233/CoreExtendedNFC</a></footer></main></body></html>

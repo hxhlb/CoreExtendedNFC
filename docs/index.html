@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>CoreExtendedNFC · Overview</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github.min.css" integrity="sha384-eFTL69TLRZTkNfYZOLM+G04821K1qZao/4QLJbet1pP4tcF+fdXq/9CdqAbWRl/L" crossorigin="anonymous" media="(prefers-color-scheme: light)">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github-dark.min.css" integrity="sha384-wH75j6z1lH97ZOpMOInqhgKzFkAInZPPSPlZpYKYTOqsaizPvhQZmAtLcPKXpLyH" crossorigin="anonymous" media="(prefers-color-scheme: dark)">
+</head>
+<body>
+<nav class="topbar" aria-label="Primary">
+  <a class="home" href="index.html">CoreExtendedNFC</a>
+  <a href="index.html" aria-current="page">Overview</a>
+  <a href="guide/index.html">Guide</a>
+  <a href="api/index.html">API</a>
+  <a href="architecture.html">Architecture</a>
+  <a href="build.html">Build</a>
+  <a href="research/index.html">Research</a>
+</nav>
+
+<main>
+<h1>CoreExtendedNFC</h1>
+<p class="lede">Swift package for NFC protocol-layer logic on iOS. CoreNFC handles RF transport; CoreExtendedNFC identifies cards, builds commands, models memory, reads passports, and exports dumps.</p>
+
+<h2 id="capabilities">Capabilities</h2>
+<ul>
+<li>Card identification from ATQA, SAK, ATS, FeliCa system code, ISO 15693 metadata, and ISO 7816 application hints.</li>
+<li>Memory operations for Ultralight, NTAG, DESFire, FeliCa Type 3, ISO 15693, and Type 4 NDEF tags.</li>
+<li>Passport and eMRTD reading with BAC, Secure Messaging, data-group parsing, Passive Authentication, and Active Authentication.</li>
+<li>Transit-card readers for Japan IC, Hong Kong Octopus, China T-Union, and Korea KS X 6924 paths.</li>
+<li>Japan My Number card token reads, protected individual-number reads, and PIN-attempt lookup.</li>
+<li>Dump export and import for hex, JSON, Flipper NFC, Proxmark3 MFU, libnfc MFD, and raw binary formats.</li>
+</ul>
+
+<h2 id="install">Install</h2>
+<pre><code class="language-swift">dependencies: [
+    .package(url: "https://github.com/Lakr233/CoreExtendedNFC.git", from: "0.1.0"),
+],
+targets: [
+    .target(name: "App", dependencies: [
+        .product(name: "CoreExtendedNFC", package: "CoreExtendedNFC"),
+    ]),
+]
+</code></pre>
+
+<h2 id="quick-start">Quick start</h2>
+<pre><code class="language-swift">import CoreExtendedNFC
+
+let (card, transport, session) = try await CoreExtendedNFC.scan()
+print(card.type.description, card.uid.hexString)
+session.invalidate()
+
+let (info, dump) = try await CoreExtendedNFC.scanAndDump()
+print(dump.exportHex())
+
+let passport = try await CoreExtendedNFC.readPassport(
+    mrzKey: "L898902C&lt;3640812512041598",
+    dataGroups: [.dg1, .dg2]
+)
+</code></pre>
+
+<h2 id="supported-cards">Supported cards</h2>
+<table>
+<thead><tr><th>Family</th><th>Identify</th><th>Read</th><th>Write</th><th>Dump</th></tr></thead>
+<tbody>
+<tr><td>MIFARE Ultralight / EV1</td><td>yes</td><td>yes</td><td>yes</td><td>yes</td></tr>
+<tr><td>NTAG 213 / 215 / 216</td><td>yes</td><td>yes</td><td>yes</td><td>yes</td></tr>
+<tr><td>MIFARE DESFire EV1-EV3</td><td>yes</td><td>yes</td><td>free-access files</td><td>yes</td></tr>
+<tr><td>FeliCa Type 3 NDEF</td><td>yes</td><td>yes</td><td>yes</td><td>partial</td></tr>
+<tr><td>ISO 15693 / Type 5</td><td>yes</td><td>yes</td><td>yes</td><td>yes</td></tr>
+<tr><td>Type 4 NDEF / ISO 7816</td><td>yes</td><td>yes</td><td>yes</td><td>partial</td></tr>
+<tr><td>eMRTD / ePassport</td><td>yes</td><td>yes</td><td>no</td><td>workflow-specific</td></tr>
+<tr><td>My Number card</td><td>yes</td><td>yes</td><td>no</td><td>token data</td></tr>
+<tr><td>MIFARE Classic 1K / 4K</td><td>yes</td><td>no</td><td>no</td><td>no</td></tr>
+</tbody>
+</table>
+<p>MIFARE Classic is identification-only because iOS does not expose Crypto1 parity-bit authentication.</p>
+
+<h2 id="where-next">Where next</h2>
+<ul class="hub-list">
+<li><a href="guide/index.html">Guide</a><span class="summary">Task-oriented scanning, dump, NDEF, passport, transit, My Number, and Info.plist setup notes.</span></li>
+<li><a href="api/index.html">API reference</a><span class="summary">Public Swift surface grouped by top-level API, card commands, models, and protocol helpers.</span></li>
+<li><a href="research/index.html">Research notes</a><span class="summary">Real-card validation, iOS polling identifiers, transit-card findings, and My Number data layout.</span></li>
+</ul>
+
+<footer>
+CoreExtendedNFC · <a href="https://github.com/Lakr233/CoreExtendedNFC">github.com/Lakr233/CoreExtendedNFC</a>
+</footer>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js" integrity="sha384-GdEWAbCjn+ghjX0gLx7/N1hyTVmPAjdC2OvoAA0RyNcAOhqwtT8qnbCxWle2+uJX" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/languages/swift.min.js" integrity="sha384-TfALNLT6HJzZieazgsVvFM0DzFWQsgl0d7mdwPLyg1yg7XE4QwLY4jqmJRNnI1S4" crossorigin="anonymous"></script>
+<script>hljs.highlightAll();</script>
+</body>
+</html>

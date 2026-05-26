@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>CoreExtendedNFC · Scan and Dump</title>
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+<nav class="topbar" aria-label="Primary">
+  <a class="home" href="../index.html">CoreExtendedNFC</a>
+  <a href="../index.html">Overview</a>
+  <a href="index.html" aria-current="page">Guide</a>
+  <a href="../api/index.html">API</a>
+  <a href="../architecture.html">Architecture</a>
+  <a href="../build.html">Build</a>
+  <a href="../research/index.html">Research</a>
+</nav>
+<main>
+<h1>Scan and dump</h1>
+<p class="lede">Use the top-level API when the app owns the NFC session. Keep the returned session alive while sending commands through the transport.</p>
+<h2 id="scan">Scan</h2>
+<pre><code class="language-swift">let (info, transport, session) = try await CoreExtendedNFC.scan()
+defer { session.invalidate() }
+</code></pre>
+<h2 id="identification-refinement">Identification refinement</h2>
+<p><code>scan()</code> first maps the CoreNFC tag family into a coarse <code>CardType</code>, then refines that result with family-specific probes where iOS exposes safe commands.</p>
+<p>For MIFARE Type 2 tags, CoreNFC may only expose an unknown MIFARE family. If the coarse result looks like MIFARE Classic, CoreExtendedNFC validates the Type 2 manufacturer pages with <code>READ 0x30 0x00</code> and the UID BCC bytes before retrying the Ultralight / NTAG <code>GET_VERSION</code> path. Real MIFARE Classic cards remain identification-only because iOS does not expose Crypto1 authentication.</p>
+<h2 id="dump">Dump</h2>
+<pre><code class="language-swift">let (info, dump) = try await CoreExtendedNFC.scanAndDump()
+print(dump.summary.userSummary)
+</code></pre>
+<h2 id="export">Export</h2>
+<pre><code class="language-swift">let json = try CoreExtendedNFC.exportJSON(dump: dump)
+let flipper = try CoreExtendedNFC.exportFlipperNFC(dump: dump)
+let artifacts = try CoreExtendedNFC.exportAll(dump: dump)
+</code></pre>
+<nav class="pager"><span class="parent"><a href="index.html">Guide</a></span><a class="next" href="ndef.html">NDEF</a></nav>
+<footer>CoreExtendedNFC · <a href="https://github.com/Lakr233/CoreExtendedNFC">github.com/Lakr233/CoreExtendedNFC</a></footer>
+</main>
+</body>
+</html>

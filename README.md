@@ -60,7 +60,7 @@ This library does.
 
 > DESFire write is limited to free-access files. Classic is ID-only — iOS hardware can't do Crypto1.
 
-Real hardware coverage is tracked in [Tested Cards](docs/Tested-Cards.md).
+Real hardware coverage is tracked in [Tested Cards](docs/research/tested-cards.html).
 
 ## Quick Start
 
@@ -127,7 +127,7 @@ let data = try await CoreExtendedNFC.readMyNumberCard(
 print(data.tokenInfo ?? "-", data.individualNumber ?? "-")
 ```
 
-Official applet/data layout reference: `docs/MyNumber-Card-Data-Format.md`
+Official applet/data layout reference: `docs/research/my-number-card.html`
 
 **Card Identification (pure logic, no hardware)**
 
@@ -152,7 +152,7 @@ Your host app needs:
 - `NFCReaderUsageDescription` in Info.plist
 - `com.apple.developer.nfc.readersession.formats` set to `TAG`
 - FeliCa system codes and ISO 7816 AIDs in Info.plist as needed
-- See `docs/NFC-InfoPlist-Reference.md` for copy-paste values, meanings, and public GitHub examples
+- See `docs/research/info-plist.html` for copy-paste values, meanings, and public GitHub examples
 
 See `Example/` for a working configuration.
 
@@ -186,7 +186,7 @@ swift test    # 319 tests, 30 suites
 
 All test vectors are sourced from public standards (ICAO 9303, NIST FIPS, NXP datasheets, RFCs). See [Test-Provenance.md](Research/Test-Provenance.md).
 
-Real-world card validation is listed in [Tested Cards](docs/Tested-Cards.md) (24 exported scans across Ultralight, NTAG, DESFire, Type 4, FeliCa, and ISO 15693 tags).
+Real-world card validation is listed in [Tested Cards](docs/research/tested-cards.html) (24 exported scans across Ultralight, NTAG, DESFire, Type 4, FeliCa, and ISO 15693 tags).
 
 > Testing is still in early stages — most coverage is against mock transports and standard test vectors, not exhaustive real-world hardware. If you run into issues with a specific card or passport, please [open an issue](https://github.com/Lakr233/CoreExtendedNFC/issues).
 

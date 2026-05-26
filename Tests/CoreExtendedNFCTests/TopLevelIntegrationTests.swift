@@ -258,6 +258,48 @@ struct TopLevelIntegrationTests {
         #expect(refined.type == .mifareDesfireEV2)
         #expect(transport.sentAPDUs.count == 5)
     }
+
+    @Test
+    func `MIFARE Classic refiner corrects Type 2 tag with GET VERSION`() async throws {
+        let uid = Data([0x04, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06])
+        let transport = MockTransport(identifier: uid)
+        transport.responses = [
+            type2ManufacturerPages(uid: uid),
+            Data([0x00, 0x04, 0x03, 0x01, 0x01, 0x00, 0x0E, 0x03]),
+        ]
+        let info = CardInfo(type: .mifareClassic1K, uid: uid)
+
+        let refined = try await CardInfoRefiner.refine(info, transport: transport)
+
+        #expect(refined.type == .mifareUltralightEV1_MF0UL21)
+        #expect(transport.sentCommands == [Data([0x30, 0x00]), Data([0x60])])
+    }
+
+    @Test
+    func `MIFARE Classic refiner corrects legacy Type 2 tag without GET VERSION`() async throws {
+        let uid = Data([0x04, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66])
+        let transport = MockTransport(identifier: uid)
+        transport.responses = [type2ManufacturerPages(uid: uid)]
+        let info = CardInfo(type: .mifareClassic1K, uid: uid)
+
+        let refined = try await CardInfoRefiner.refine(info, transport: transport)
+
+        #expect(refined.type == .mifareUltralight)
+        #expect(transport.sentCommands == [Data([0x30, 0x00]), Data([0x60])])
+    }
+
+    @Test
+    func `MIFARE Classic refiner keeps Classic when Type 2 manufacturer page check fails`() async throws {
+        let uid = Data([0x04, 0x01, 0x02, 0x03])
+        let transport = MockTransport(identifier: uid)
+        transport.responses = [Data(repeating: 0x00, count: 16)]
+        let info = CardInfo(type: .mifareClassic1K, uid: uid)
+
+        let refined = try await CardInfoRefiner.refine(info, transport: transport)
+
+        #expect(refined.type == .mifareClassic1K)
+        #expect(transport.sentCommands == [Data([0x30, 0x00])])
+    }
 }
 
 private func validType4CC() -> Data {
@@ -287,6 +329,18 @@ private func makeFeliCaAttributeBlock(ndefLength: Int, nbr: UInt8 = 4, nbw: UInt
     block[14] = UInt8((checksum >> 8) & 0xFF)
     block[15] = UInt8(checksum & 0xFF)
     return block
+}
+
+private func type2ManufacturerPages(uid: Data) -> Data {
+    let uidBytes = [UInt8](uid)
+    let bcc0 = 0x88 ^ uidBytes[0] ^ uidBytes[1] ^ uidBytes[2]
+    let bcc1 = uidBytes[3] ^ uidBytes[4] ^ uidBytes[5] ^ uidBytes[6]
+    return Data([
+        uidBytes[0], uidBytes[1], uidBytes[2], bcc0,
+        uidBytes[3], uidBytes[4], uidBytes[5], uidBytes[6],
+        bcc1, 0x48, 0x00, 0x00,
+        0xE1, 0x10, 0x06, 0x00,
+    ])
 }
 
 final class MockISO15693Transport: ISO15693TagTransporting, @unchecked Sendable {
