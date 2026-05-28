@@ -137,9 +137,18 @@ class ScanStore: @MainActor ObjectListDataSource {
     }
 
     func configure(cell: ConfigurableView, for item: ScanRecord) {
-        cell.configure(icon: UIImage(systemName: Self.iconName(for: String(describing: item.cardInfo.type.family))))
-        cell.configure(title: String.LocalizationValue(stringLiteral: item.cardInfo.type.description))
-        cell.configure(description: String.LocalizationValue(stringLiteral: item.cardInfo.uid.hexString))
+        let row = rowPresentation(for: item)
+        cell.configure(icon: UIImage(systemName: row.icon))
+        cell.configure(title: row.title)
+        cell.configure(description: row.detail)
+    }
+
+    func rowPresentation(for item: ScanRecord) -> ObjectListRowPresentation {
+        ObjectListRowPresentation(
+            icon: Self.iconName(for: String(describing: item.cardInfo.type.family)),
+            title: item.cardInfo.type.description,
+            detail: item.cardInfo.uid.hexString
+        )
     }
 
     static func iconName(for family: String) -> String {

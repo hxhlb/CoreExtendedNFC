@@ -136,9 +136,18 @@ class NDEFStore: @MainActor ObjectListDataSource {
     }
 
     func configure(cell: ConfigurableView, for item: NDEFDataRecord) {
-        cell.configure(icon: UIImage(systemName: Self.iconName(for: item)))
-        cell.configure(title: String.LocalizationValue(stringLiteral: item.name))
-        cell.configure(description: String.LocalizationValue(stringLiteral: item.displayValue))
+        let row = rowPresentation(for: item)
+        cell.configure(icon: UIImage(systemName: row.icon))
+        cell.configure(title: row.title)
+        cell.configure(description: row.detail)
+    }
+
+    func rowPresentation(for item: NDEFDataRecord) -> ObjectListRowPresentation {
+        ObjectListRowPresentation(
+            icon: Self.iconName(for: item),
+            title: item.name,
+            detail: item.displayValue
+        )
     }
 
     static func iconName(for record: NDEFDataRecord) -> String {

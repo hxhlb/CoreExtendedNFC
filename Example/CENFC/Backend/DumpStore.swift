@@ -138,9 +138,18 @@ class DumpStore: @MainActor ObjectListDataSource {
     }()
 
     func configure(cell: ConfigurableView, for item: DumpRecord) {
+        let row = rowPresentation(for: item)
+        cell.configure(icon: UIImage(systemName: row.icon))
+        cell.configure(title: row.title)
+        cell.configure(description: row.detail)
+    }
+
+    func rowPresentation(for item: DumpRecord) -> ObjectListRowPresentation {
         let dateString = Self.dateFormatter.string(from: item.date)
-        cell.configure(icon: UIImage(systemName: ScanStore.iconName(for: String(describing: item.dump.cardInfo.type.family))))
-        cell.configure(title: String.LocalizationValue(stringLiteral: item.dump.cardInfo.type.description))
-        cell.configure(description: String.LocalizationValue(stringLiteral: "\(dateString) · \(item.dump.summary.technicalSummary)"))
+        return ObjectListRowPresentation(
+            icon: ScanStore.iconName(for: String(describing: item.dump.cardInfo.type.family)),
+            title: item.dump.cardInfo.type.description,
+            detail: "\(dateString) · \(item.dump.summary.technicalSummary)"
+        )
     }
 }
